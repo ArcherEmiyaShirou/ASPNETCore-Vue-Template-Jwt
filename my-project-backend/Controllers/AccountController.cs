@@ -1,6 +1,6 @@
-﻿using Backend.Contract.Entity;
+﻿using Backend.Common.Utills;
+using Backend.Contract.Entity;
 using Microsoft.AspNetCore.Mvc;
-using my_project_backend.Utills;
 
 namespace my_project_backend.Controllers
 {

@@ -2,13 +2,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Policy;
 
-namespace my_project_backend.Config
+namespace my_project_backend.Middleware
 {
     public class CustomResponseBodyMiddlewareResultHandler : IAuthorizationMiddlewareResultHandler
     {
-        public async Task HandleAsync(RequestDelegate next, 
-            HttpContext context, 
-            AuthorizationPolicy policy, 
+        public async Task HandleAsync(RequestDelegate next,
+            HttpContext context,
+            AuthorizationPolicy policy,
             PolicyAuthorizationResult authorizeResult)
         {
             if (!authorizeResult.Succeeded)
@@ -18,7 +18,7 @@ namespace my_project_backend.Config
                     if (authorizeResult is { Forbidden: true }) //禁止访问
                     {
                         context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                        await context.Response.WriteAsJsonAsync<CustomResponse<object>>(
+                        await context.Response.WriteAsJsonAsync(
                             CustomResponse<object>.Forbidden("禁止访问!"));
                     }
                     if (authorizeResult is { Challenged: true })    //未登录

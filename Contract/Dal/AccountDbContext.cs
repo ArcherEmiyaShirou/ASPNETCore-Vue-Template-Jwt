@@ -13,5 +13,10 @@ namespace Backend.Contract.Dal
         {
             
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);
+        }
     }
 }

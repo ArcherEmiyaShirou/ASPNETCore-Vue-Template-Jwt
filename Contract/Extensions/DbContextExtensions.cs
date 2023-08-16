@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using my_project_backend.Config;
 
 namespace Backend.Contract.Extensions
 {
@@ -14,8 +15,7 @@ namespace Backend.Contract.Extensions
         {
             services.AddDbContext<T>(options =>
             {
-                options.UseSqlServer(Environment.GetEnvironmentVariable("DefaultDB:ConnStr") ??
-                                     throw new InvalidOperationException("Connection string is null,plz check the connection string in System Environment !"));
+                options.UseSqlServer(ConfigurationStringManager.Instance.DbConnectionString);
             });
         }
     }

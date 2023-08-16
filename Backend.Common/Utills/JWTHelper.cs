@@ -2,8 +2,9 @@
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
-namespace my_project_backend.Utills
+namespace Backend.Common.Utills
 {
     public class JwtHelper
     {
