@@ -1,5 +1,7 @@
 using System.Text;
+using System.Threading.RateLimiting;
 using Backend.Common.Utills;
+using Backend.Common.Utills.Contract;
 using Backend.Contract.Dal;
 using Backend.Contract.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -50,7 +52,22 @@ builder.Services.AddSerilog(config =>
         .WriteTo.Console()
         .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day);
 });
+// Rate Limit
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 
+    options.AddPolicy("fixed", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString(),
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 10,
+                Window = TimeSpan.FromSeconds(10)
+            }));
+});
+// PasswordHasher
+builder.Services.AddSingleton<IPasswordHasher, SHA256PasswordHasher>();
 //DbContext
 builder.Services.AddCustomDbContext<AccountDbContext>();
 // Authentication 
@@ -82,6 +99,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseRateLimiter();
 
 app.UseAuthentication();
 

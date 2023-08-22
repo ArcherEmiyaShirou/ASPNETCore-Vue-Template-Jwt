@@ -9,6 +9,10 @@ namespace Backend.Service.Interface
 {
     public interface IAccountService
     {
-        AuthorizeVO Login();
+        Account FindAccountByNameOrEmail(string emailOrName);
+        string RegistEmailVerifyCode(string type, string email, string address);
+        string RegistEmailAccount(string EmailRegisterVO info);
+        string resetEmailAccountPassword(EmailResetVO info);
+        string resetConfirm(ConfirmResetVO info);
     }
 }

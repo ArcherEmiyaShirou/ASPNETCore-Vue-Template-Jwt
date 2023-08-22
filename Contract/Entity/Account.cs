@@ -15,5 +15,8 @@ namespace Backend.Contract.Entity
         public string Email { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;
         public DateTime Created { get; set; }
+
+        public const string ROLE_USER = "user";
+        public const string ROLE_ADMIN = "admin";
     }
 }

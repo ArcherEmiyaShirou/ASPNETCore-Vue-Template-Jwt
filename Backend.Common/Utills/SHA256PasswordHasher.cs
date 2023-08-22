@@ -1,19 +1,31 @@
-﻿using System.Security.Cryptography;
+﻿using System.Runtime.Intrinsics.Arm;
+using System.Security.Cryptography;
+using System.Text;
 using Backend.Common.Utills.Contract;
 
 namespace Backend.Common.Utills
 {
-    public class SHA256PasswordHasher :IPasswordHasher
+    public class SHA256PasswordHasher : IPasswordHasher
     {
-        public string HashPassword(string password)
+        public async Task<string> HashPasswordAsync(string password)
         {
+            return await Task<string>.Run<string>(() =>
+            {
+                byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
+                byte[] hashedPassword = SHA256.HashData(passwordBytes);
+                return Convert.ToBase64String(hashedPassword);
+            });
 
-            return string.Empty;
         }
 
-        public bool VerifyPassword(string password)
+        public async Task<bool> VerifyPasswordAsync(string from, string target)
         {
-            return true;
+            return await Task.Run<bool>(async () =>
+            {
+                string hashedFromPassword = await HashPasswordAsync(from);
+                return target == hashedFromPassword;
+            });
         }
+
     }
 }
