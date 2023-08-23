@@ -15,7 +15,7 @@ namespace Backend.Contract.EntityConfig
     {
         private readonly IPasswordHasher hasher = new SHA256PasswordHasher();
 
-        public void Configure(EntityTypeBuilder<Account> builder)
+        public async void Configure(EntityTypeBuilder<Account> builder)
         {
             builder.ToTable(nameof(Account));
             builder.HasKey(x => x.Id);
@@ -24,7 +24,7 @@ namespace Backend.Contract.EntityConfig
                 .HasDefaultValueSql("getdate()");
 
             builder.HasData(
-                new Account { Id = 1, Email = "2811542944@qq.com", Password = hasher.HashPassword("Hzxnnez160749"), Role = Account.ROLE_USER });
+                new Account { Id = 1, Email = "2811542944@qq.com", Password = await hasher.HashPasswordAsync("Hzxnnez160749"), Role = Const.ROLE_USER });
         }
     }
 }

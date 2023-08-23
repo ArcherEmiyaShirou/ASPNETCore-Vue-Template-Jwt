@@ -35,6 +35,12 @@ namespace my_project_backend.Middleware
                     }
                     return;
                 }
+                catch(InvalidOperationException ex)
+                {
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    await context.Response.WriteAsJsonAsync(
+                        CustomResponse<object>.Failure(StatusCodes.Status400BadRequest,ex.Message));
+                }
                 catch (Exception e)
                 {
                     context.Response.StatusCode = StatusCodes.Status500InternalServerError;

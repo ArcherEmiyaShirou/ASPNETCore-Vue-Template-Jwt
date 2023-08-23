@@ -4,6 +4,7 @@ using Backend.Common.Utills;
 using Backend.Common.Utills.Contract;
 using Backend.Contract.Dal;
 using Backend.Contract.Extensions;
+using Backend.Service.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
@@ -43,7 +44,8 @@ builder.Services.AddSwaggerGen(c => {
          }
      });
 });
-builder.Services.AddScoped<IAuthorizationMiddlewareResultHandler, CustomResponseBodyMiddlewareResultHandler>();
+// add services
+builder.Services.AddProjectServices();
 builder.Services.AddSingleton(typeof(JwtHelper));
 // logger
 builder.Services.AddSerilog(config =>
@@ -62,14 +64,18 @@ builder.Services.AddRateLimiter(options =>
             partitionKey: httpContext.Connection.RemoteIpAddress?.ToString(),
             factory: _ => new FixedWindowRateLimiterOptions
             {
-                PermitLimit = 10,
+                PermitLimit = 3,
                 Window = TimeSpan.FromSeconds(10)
             }));
 });
+//MemoryCache
+builder.Services.AddMemoryCache();
 // PasswordHasher
 builder.Services.AddSingleton<IPasswordHasher, SHA256PasswordHasher>();
 //DbContext
 builder.Services.AddCustomDbContext<AccountDbContext>();
+//AutoMapper
+builder.Services.AddMyAutoMapper();
 // Authentication 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -90,6 +96,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 //Authorization
 builder.Services.AddAuthorization();
 builder.Services.AddHttpContextAccessor();
+//Mediatr
+builder.Services.AddMediatR(config =>
+{
+    config.RegisterServicesFromAssembly(typeof(Program).Assembly);
+});
 
 var app = builder.Build();
 

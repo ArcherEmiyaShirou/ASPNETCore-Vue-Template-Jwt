@@ -7,6 +7,8 @@
         public string JwtIssuer { get; set; } = Environment.GetEnvironmentVariable("JWT:Issuer") ?? throw new ArgumentNullException(nameof(JwtIssuer));
         public string JwtSecretKey { get; set; } = Environment.GetEnvironmentVariable("JWT:SecretKey") ?? throw new ArgumentNullException(nameof(JwtSecretKey));
         public string PasswordEncode { get; set; } = Environment.GetEnvironmentVariable("PasswordEncode:Salt") ?? throw new ArgumentNullException(nameof(PasswordEncode));
+        public string EmailAddress { get; set; } = Environment.GetEnvironmentVariable("163email_smtp_from") ?? throw new ArgumentNullException("enviroment variable '163email_smtp_from' didn't set!");
+        public string EmailCredential { get; set; } = Environment.GetEnvironmentVariable("163email_smtp_code") ?? throw new ArgumentNullException("enviroment variable '163email_smtp_code' didn't set!");
 
         private ConfigurationStringManager()
         {

@@ -7,6 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="automapper" Version="12.0.1" />
+    <PackageReference Include="automapper.extensions.microsoft.dependencyinjection" Version="12.0.1" />
+    <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
     <PackageReference Include="microsoft.entityframeworkcore.relational" Version="7.0.10" />
     <PackageReference Include="microsoft.entityframeworkcore.sqlserver" Version="7.0.10" />
     <PackageReference Include="microsoft.entityframeworkcore.tools" Version="7.0.10">
