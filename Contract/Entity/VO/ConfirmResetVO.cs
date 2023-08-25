@@ -10,8 +10,8 @@ namespace Backend.Contract.Entity.VO
     public class ConfirmResetVO
     {
         [EmailAddress]
-        public string Email { get; set; } = string.Empty;
+        public string? Email { get; set; } = string.Empty;
         [StringLength(6, MinimumLength = 6)]
-        public string Code { get; set; } = string.Empty;
+        public string? Code { get; set; } = string.Empty;
     }
 }

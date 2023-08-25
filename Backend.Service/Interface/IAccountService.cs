@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Backend.Contract.Entity;
 using Backend.Contract.Entity.VO;
+using Microsoft.AspNetCore.Http;
 
 namespace Backend.Service.Interface
 {
@@ -13,7 +14,9 @@ namespace Backend.Service.Interface
         Task<Account?> FindAccountByNameOrEmail(string emailOrName);
         string RegistEmailVerifyCode(string type, string email, string address);
         Task<string> RegistEmailAccountAsync(EmailRegisterVO info);
-        string resetEmailAccountPassword(EmailResetVO info);
-        string resetConfirm(ConfirmResetVO info);
+        Task<string> ResetEmailAccountPasswordAsync(EmailResetVO info);
+        string ResetConfirm(ConfirmResetVO info);
+
+        string Logout(HttpContext context);
     }
 }

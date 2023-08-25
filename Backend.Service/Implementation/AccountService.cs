@@ -12,9 +12,11 @@ using Backend.Contract.Entity.DTO;
 using Backend.Contract.Entity.VO;
 using Backend.Service.Interface;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace Backend.Service.Implementation
 {
@@ -70,9 +72,11 @@ namespace Backend.Service.Implementation
 
             await _dbContext.Set<Account>().AddAsync(account);
             int effectedRow = _dbContext.SaveChanges();
+
             if (effectedRow == 0)
-                throw new AddAccountFailureException("内部服务器出错，添加失败！");
-            _memoryCache.Remove(Const.VERIFY_EMAIL_LIMIT + email);
+                throw new AddAccountFailureException("内部服务器出错，请联系管理员！！");
+            else 
+                DeleteEmailVerifyCode(email);
 
             return string.Empty;
         }
@@ -82,7 +86,7 @@ namespace Backend.Service.Implementation
             string code = (new Random().Next(899999) + 100000).ToString();
             var data = new Dictionary<string, string>
             {
-                {"type",Const.EMAIL_TYPE_REGISTRATION },
+                {"type", type },
                 {"code", code},
                 {"email", email},
             };
@@ -93,14 +97,45 @@ namespace Backend.Service.Implementation
             return string.Empty;
         }
 
-        public string resetConfirm(ConfirmResetVO info)
+        public string ResetConfirm(ConfirmResetVO info)
         {
-            throw new NotImplementedException();
+            string email = info.Email ??
+                throw new InvalidOperationException("邮箱不能为空！");
+            string code = info.Code ?? 
+                throw new InvalidOperationException("请输入验证码！！");
+            string resetCode = GetEmailVerifyCode(email) ?? 
+                throw new InvalidOperationException("请先获取验证码！");
+
+            if (code != resetCode) throw new InvalidOperationException("验证码输入错误，请重新输入！");
+
+            return string.Empty;
         }
 
-        public string resetEmailAccountPassword(EmailResetVO info)
+        public void DeleteEmailVerifyCode(string email)
         {
-            throw new NotImplementedException();
+            _memoryCache.Remove(Const.VERIFY_EMAIL_DATA + email);
+        }
+
+        public async Task<string> ResetEmailAccountPasswordAsync(EmailResetVO info)
+        {
+            _ = ResetConfirm(new() { Code = info.code, Email = info.email });
+            string email = info.email!;
+            string rawPassword = info.password ?? throw new InvalidOperationException("请输入密码！");
+
+            Account oldAccount = await FindAccountByNameOrEmail(email) ?? throw new InvalidOperationException("未找到对应的账户！");
+            oldAccount.Password = await _passwordHasher.HashPasswordAsync(rawPassword);
+            int affectedRows = await _dbContext.SaveChangesAsync();
+            if (affectedRows == 0)
+                throw new InvalidOperationException("保存失败，请联系管理员！");
+
+            return string.Empty;
+        }
+
+        public string Logout(HttpContext httpContext)
+        {
+
+
+            return string.Empty;
         }
 
         public bool VerifyLimit(string address)
@@ -114,14 +149,14 @@ namespace Backend.Service.Implementation
             return _memoryCache.Get<string>(Const.VERIFY_EMAIL_DATA + email);
         }
 
-        public async Task<bool> ExistEmailAccount(string address)
+        public async Task<bool> ExistEmailAccount(string email)
         {
-            return await _dbContext.Set<Account>().AnyAsync(ac => ac.Email == address);
+            return await _dbContext.Set<Account>().AnyAsync(ac => ac.Email == email);
         }
 
         public async Task<bool> ExistUserNameAccount(string userName)
         {
-            return await _dbContext.Set<Account>().AllAsync(ac => ac.Username == userName);
+            return await _dbContext.Set<Account>().AnyAsync(ac => ac.Username == userName);
         }
     }
 }

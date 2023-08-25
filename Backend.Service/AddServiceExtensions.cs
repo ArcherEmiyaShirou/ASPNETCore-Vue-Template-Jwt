@@ -15,6 +15,7 @@ namespace Backend.Service.Extensions
         {
             services.AddScoped<IEmailSerivce,EmailService>();
             services.AddScoped<IAccountService,AccountService>();
+            services.AddScoped<IAuthorizeService,AuthorizeService>();
 
             return services;
         }

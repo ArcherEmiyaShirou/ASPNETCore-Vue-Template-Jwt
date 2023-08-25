@@ -7,6 +7,7 @@ using Backend.Contract.Extensions;
 using Backend.Service.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using my_project_backend.Config;
@@ -64,8 +65,16 @@ builder.Services.AddRateLimiter(options =>
             partitionKey: httpContext.Connection.RemoteIpAddress?.ToString(),
             factory: _ => new FixedWindowRateLimiterOptions
             {
-                PermitLimit = 3,
-                Window = TimeSpan.FromSeconds(10)
+                PermitLimit = 4,
+                Window = TimeSpan.FromSeconds(12)
+            }));
+    options.AddPolicy("email_code",httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString(),
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 1,
+                Window = TimeSpan.FromMinutes(3)
             }));
 });
 //MemoryCache
@@ -93,6 +102,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             RequireExpirationTime = true,
         };
     });
+builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, CustomResponseBodyMiddlewareResultHandler>();
 //Authorization
 builder.Services.AddAuthorization();
 builder.Services.AddHttpContextAccessor();
@@ -104,15 +114,20 @@ builder.Services.AddMediatR(config =>
 
 var app = builder.Build();
 
+app.UseRateLimiter();
+
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseRateLimiter();
 
 app.UseAuthentication();
+
+app.UseMiddleware<CheckJwtBlackListMiddleware>();
 
 app.UseAuthorization();
 

@@ -23,5 +23,7 @@ namespace Backend.Common.Utills
         public const string EMAIL_TYPE_REGISTRATION = "registration";
         public const string EMAIL_TYPE_RESET = "reset";
 
+        //JWT
+        public const string JWT_BLACK_LIST = nameof(JWT_BLACK_LIST);
     }
 }
