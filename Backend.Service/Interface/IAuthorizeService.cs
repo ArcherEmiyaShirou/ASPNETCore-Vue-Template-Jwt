@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Backend.Contract.Entity;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace Backend.Service.Interface
 {
     public interface IAuthorizeService
     {
-        Task<string> Login(string username, string password);
+        Task<AuthorizeVO> Login(string username, string password);
         Task Logout(HttpContext httpContext);
     }
 }

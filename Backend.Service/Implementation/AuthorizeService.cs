@@ -6,7 +6,7 @@ using Backend.Service.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.IdentityModel.JsonWebTokens;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Backend.Service.Implementation
 {
@@ -28,14 +28,24 @@ namespace Backend.Service.Implementation
             this.dbContext = dbContext;
             this.memoryCache = memoryCache;
         }
-        public async Task<string> Login(string username, string password)
+        public async Task<AuthorizeVO> Login(string username, string password)
         {
-            Account entity = await dbContext.Set<Account>().FirstOrDefaultAsync(ac => ac.Username == username) ?? throw new InvalidOperationException("用户名或密码错误！");
+            Account entity = await dbContext.Set<Account>().FirstOrDefaultAsync(ac => ac.Username == username || ac.Email == username) ?? throw new InvalidOperationException("用户名或密码错误！");
             if (!await passwordHasher.VerifyPasswordAsync(password, entity.Password))
                 throw new InvalidOperationException("用户名或密码错误！");
             else
             {
-                return jwtHelper.CreateToken(entity.Username, entity.Role, entity.Email);
+                JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+                string token = jwtHelper.CreateToken(entity.Username, entity.Role, entity.Email);
+                JwtSecurityToken tokenObj = jwtSecurityTokenHandler.ReadJwtToken(token);
+
+                return new AuthorizeVO
+                {
+                    Username = username,
+                    Role = entity.Role,
+                    Token = token,
+                    Expire = tokenObj.ValidTo
+                };
             }
         }
 

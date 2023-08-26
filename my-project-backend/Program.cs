@@ -111,6 +111,15 @@ builder.Services.AddMediatR(config =>
 {
     config.RegisterServicesFromAssembly(typeof(Program).Assembly);
 });
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("cors", config =>
+    {
+        config.AllowAnyOrigin()
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -125,12 +134,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseRouting();
+
+app.UseCors("cors");
+
 app.UseAuthentication();
 
 app.UseMiddleware<CheckJwtBlackListMiddleware>();
 
 app.UseAuthorization();
 
-app.MapDefaultControllerRoute();
+app.MapControllers();
 
 app.Run();

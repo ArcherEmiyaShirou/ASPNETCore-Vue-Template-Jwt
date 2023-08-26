@@ -20,7 +20,7 @@ namespace Backend.Common.Utills
         public const string VERIFY_EMAIL_DATA = nameof(VERIFY_EMAIL_DATA);
 
         //email type
-        public const string EMAIL_TYPE_REGISTRATION = "registration";
+        public const string EMAIL_TYPE_REGISTRATION = "register";
         public const string EMAIL_TYPE_RESET = "reset";
 
         //JWT
