@@ -1,4 +1,4 @@
-![image](https://github.com/ArcherEmiyaShirou/ASPNETCore-Vue-Template-Jwt/assets/66017004/eb5d0552-838a-4284-ac34-e6f3c1615143)# ASPNETCore-Vue-Template-Jwt
+# ASPNETCore-Vue-Template-Jwt
 
 # 配置信息
 ### 所有配置信息都在环境变量中，请自行添加环境变量，否则会报异常无法启动。
