@@ -1,7 +1,7 @@
 # ASPNETCore-Vue-Template-Jwt
 
 # 技术栈
-- .NET 6
+- .NET 7
 - Microsoft Sql Server
 - EntityFramework Core 7 + Fluent API
 - Automapper
@@ -10,6 +10,7 @@
 - SeriLog
 - RateLimiter(AspNetCore 7.0 速率控制中间件)
 - Json Web Token
+- 自定义异常处理中间件
 
 # 配置信息
 ### 所有配置信息都在环境变量中，请自行添加环境变量，否则会报异常无法启动。
